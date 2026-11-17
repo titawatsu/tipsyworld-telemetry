@@ -1,0 +1,25 @@
+name: Deploy leaderboard on update
+
+on:
+  push:
+    branches: [main]
+    paths: [leaderboard.json]
+  workflow_dispatch:
+
+permissions: {}
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger account Pages deployment
+        env:
+          GH_TOKEN: ${{ secrets.TIPSYWORLD_PAGES_DISPATCH_TOKEN }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::error::Set the TIPSYWORLD_PAGES_DISPATCH_TOKEN repository secret."
+            exit 1
+          fi
+          gh api --method POST \
+            repos/titawatsu/titawatsu.github.io/actions/workflows/deploy-leaderboard.yml/dispatches \
+            -f ref=main
